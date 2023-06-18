@@ -1,0 +1,34 @@
+name: 'Delete temporary ECR repository'
+on:
+  workflow_call:
+    inputs:
+        repository_name:
+            description: 'The name of the repository to delete'
+            required: true
+            type: string
+    secrets:
+      aws_repository_role_arn:
+        required: true
+
+jobs:
+  delete-temporary-ecr-repo:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        # XXX: at some point we could keep the temp repos around for a while so
+        # that the images can be pulled
+        with:
+          aws-region: us-east-1
+          role-to-assume: ${{ secrets.aws_repository_role_arn }}
+          role-session-name: GHA-delete-temp-repos-${{ github.run_id }}-${{ github.run_number }}
+          role-duration-seconds: 900
+
+      - name: Delete temporary ECR repository
+        run: |
+          aws ecr delete-repository \
+            --repository-name ${{ inputs.repository_name }} \
+            --force
