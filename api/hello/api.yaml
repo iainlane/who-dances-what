@@ -1,0 +1,20 @@
+openapi: 3.0.1
+info:
+  title: who-dances-what-api
+  version: "1.0.0"
+paths:
+  /hello:
+    get:
+      summary: Returns a greeting
+      x-amazon-apigateway-integration:
+        "#ref": "#/components/x-amazon-apigateway-integrations/lambda"
+        uri: ${public_lambda_arn}
+      description: A simple endpoint that returns a greeting string
+      responses:
+        "200":
+          description: A greeting string
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Hello, World!

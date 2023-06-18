@@ -1,0 +1,11 @@
+bin/
+cppsolver/build/
+cppsolver/CMakeCache.txt
+cppsolver/CMakeFiles/
+
+**/_obj/
+
+*.db
+*.db.bak
+
+.tfvars

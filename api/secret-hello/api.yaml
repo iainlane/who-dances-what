@@ -1,0 +1,22 @@
+openapi: 3.0.1
+info:
+  title: who-dances-what-api
+  version: "1.0.0"
+paths:
+  /secret-hello:
+    get:
+      summary: Returns a secret greeting
+      x-amazon-apigateway-integration:
+        "#ref": "#/components/x-amazon-apigateway-integrations/lambda"
+        uri: ${public_lambda_arn}
+      security:
+        - jwt-authorizer: []
+      description: A simple endpoint that returns a greeting string but it's secret
+      responses:
+        "200":
+          description: A greeting string
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Hello, secret world!

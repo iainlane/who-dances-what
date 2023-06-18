@@ -1,0 +1,37 @@
+name: Build, lint and test
+
+on:
+    pull_request:
+        branches:
+            - main
+    push:
+        branches:
+            - main
+
+jobs:
+    build-test-lint:
+        runs-on: ubuntu-latest
+        container:
+            image: public.ecr.aws/r9i9c8e1/who-dances-what-devcontainer:latest
+            options: --user root
+        steps:
+        - uses: actions/checkout@v3.5.3
+        - name: Configure cmake
+          run: cmake -S cppsolver -B cppsolver/build
+        - name: Build
+          run: cmake --build cppsolver/build
+        - name: Test with ctest
+          run: cmake --build cppsolver/build --target test
+    golangci:
+        name: lint
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@v3.5.3
+        - uses: actions/setup-go@v4.0.1
+          with:
+            go-version: '1.20'
+            cache: false
+        - name: golangci-lint
+          uses: golangci/golangci-lint-action@v3.6.0
+          with:
+            version: v1.53

@@ -1,0 +1,43 @@
+{
+	"name": "C++ Dev Container with Google OR-Tools",
+	/*
+	"build": {
+		"context": "..",
+		"dockerfile": "Dockerfile"
+	},
+	*/
+	"image": "public.ecr.aws/r9i9c8e1/who-dances-what-devcontainer:latest",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"GitHub.copilot-chat",
+				"GitHub.copilot-labs",
+				"GitHub.copilot-nightly",
+				"golang.go",
+				"github.vscode-github-actions",
+				"matepek.vscode-catch2-test-adapter",
+				"ms-azuretools.vscode-docker",
+				"ms-vscode.cmake-tools",
+				"ms-vscode.cpptools",
+				"ms-vscode.cpptools-extension-pack"
+			],
+			"settings": {
+				"cmake.configureOnOpen": true,
+				"cmake.buildDirectory": "${workspaceFolder}/cppsolver/build",
+				"cmake.sourceDirectory": "${workspaceFolder}/cppsolver",
+				"terminal.integrated.defaultProfile.linux": "zsh",
+				"terminal.integrated.profiles.linux": {
+					"bash": {
+						"path": "bash",
+						"icon": "terminal-bash"
+					},
+					"zsh": {
+						"path": "zsh"
+					}
+				}
+			}
+		},
+		"containerUser": "devcontainer",
+		"updateRemoteUserUID": true
+	}
+}
