@@ -1,0 +1,31 @@
+FROM rust:1.70.0-bullseye as rustbuilder
+RUN cargo install \
+    bat \
+    du-dust \
+    exa \
+    fd-find \
+    git-delta \
+    ripgrep \
+    tokei
+
+FROM golang:1.20.5-bookworm as gobuilder
+RUN go install github.com/rs/curlie@latest
+RUN go install github.com/muesli/duf@latest
+RUN go install golang.org/x/tools/gopls@latest
+
+FROM scratch
+
+COPY --from=rustbuilder \
+    /usr/local/cargo/bin/bat \
+    /usr/local/cargo/bin/dust \
+    /usr/local/cargo/bin/exa \
+    /usr/local/cargo/bin/fd \
+    /usr/local/cargo/bin/delta \
+    /usr/local/cargo/bin/rg \
+    /usr/local/bin/
+
+COPY --from=gobuilder \
+    /go/bin/curlie \
+    /go/bin/duf \
+    /go/bin/gopls \
+    /usr/local/bin/
