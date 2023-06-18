@@ -1,0 +1,149 @@
+name: 'Docker Build and Push Reusable Workflow'
+on:
+  workflow_call:
+    inputs:
+      dockerfile:
+        description: 'Path to the Dockerfile'
+        required: true
+        type: string
+      filter:
+        description: 'Filter to apply to the paths'
+        default: ''
+        required: false
+        type: string
+      project:
+        description: 'CodeBuild project name'
+        required: true
+        type: string
+      public_repo_prefix:
+        description: 'Prefix for public repositories'
+        required: true
+        type: string
+      temp_image_name:
+        description: 'Name of the temporary ECR repository'
+        required: true
+        type: string
+    outputs:
+      image:
+        description: 'ECR image we pushed'
+        value: ${{ github.event_name != 'pull_request' && inputs.project || jobs.create-temporary-ecr-repo.outputs.repository }}
+    secrets:
+      aws_build_role_arn:
+        required: true
+      aws_manifest_role_arn:
+        required: true
+      aws_repository_role_arn:
+        required: true
+      build_args:
+        description: 'Build arguments to pass to the Docker build command'
+        required: false
+      private_repo_prefix:
+        required: true
+
+env:
+  AWS_REGION: us-east-1
+  IMAGE_NAME: ${{ github.event_name != 'pull_request' && inputs.project || inputs.temp_image_name }}
+  REPOSITORY: ${{ github.event_name != 'pull_request' && inputs.public_repo_prefix || secrets.private_repo_prefix }}
+
+jobs:
+  should-run:
+    runs-on: ubuntu-latest
+    outputs:
+      run: steps.paths-filter.outputs.dockerfile == 'true'
+    steps:
+      - name: Paths filter
+        id: paths-filter
+        uses: dorny/paths-filter@v2.11.1
+        with:
+          filters: |
+            dockerfile:
+              - '${{ inputs.filter != '' && inputs.filter || inputs.dockerfile }}'
+
+  create-temporary-ecr-repo:
+    needs: should-run
+    if: needs.should-run.outputs.run && github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    outputs:
+      repository: ${{ inputs.temp_image_name }}
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.aws_repository_role_arn }}
+          role-session-name: GHA-${{ inputs.project }}-create-temp-repo-${{ github.run_id }}-${{ github.run_number }}
+          role-duration-seconds: 900
+
+      - uses: int128/create-ecr-repository-action@v1
+        name: Create temporary ECR repository
+        id: ecr
+        with:
+          repository: ${{ inputs.temp_image_name }}
+
+  build-and-push:
+    strategy:
+      matrix:
+        architecture: [x86_64, aarch64]
+    needs: [should-run, create-temporary-ecr-repo]
+    if: needs.should-run.outputs.run
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      PROJECT: who-dances-what-${{ inputs.project }}-build-and-push-images-${{ matrix.architecture }}
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.aws_build_role_arn }}
+          role-session-name: GHActions-${{ inputs.project }}-${{ matrix.architecture }}-${{ github.run_id }}-${{ github.run_number }}
+          role-duration-seconds: 3600
+
+      - name: Start Build
+        id: codebuild
+        uses: aws-actions/aws-codebuild-run-build@v1
+        env:
+          BUILD_ARGS: ${{ secrets.build_args }}
+          DOCKERFILE_PATH: ${{ inputs.dockerfile }}
+          TAG_SUFFIX: -${{ matrix.architecture }}
+        with:
+          project-name: ${{ env.PROJECT }}
+          env-vars-for-codebuild: "AWS_REGION, BUILD_ARGS, DOCKERFILE_PATH, IMAGE_NAME, REPOSITORY, TAG_SUFFIX"
+
+      - name: Stop Builds
+        if: failure() || cancelled()
+        continue-on-error: true
+        run: |
+          aws codebuild batch-delete-builds \
+            --ids $(aws codebuild list-builds-for-project --project-name "${{ env.PROJECT }}" --query 'ids' --output text)
+
+  manifest:
+    needs: [should-run, build-and-push]
+    runs-on: ubuntu-latest
+    if: needs.should-run.outputs.run
+    name: Manifest
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.aws_manifest_role_arn }}
+          role-session-name: GHActions-manifest-${{ github.run_id }}-${{ github.run_number }}
+      
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registry-type: ${{ github.event_name != 'pull_request' && 'public' || 'private' }}
+
+      - name: Create and push manifest
+        uses: Noelware/docker-manifest-action@0.3.1
+        with:
+          inputs: ${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:latest
+          images: ${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:latest-x86_64,${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:latest-aarch64
+          push: true

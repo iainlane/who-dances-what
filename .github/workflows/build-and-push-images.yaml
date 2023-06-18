@@ -1,0 +1,96 @@
+name: build-and-push-images
+
+# cancel previous runs for this PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .devcontainer/Dockerfile.devtools
+      - .devcontainer/Dockerfile.ortools
+      - .devcontainer/Dockerfile
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .devcontainer/Dockerfile.devtools
+      - .devcontainer/Dockerfile.ortools
+      - .devcontainer/Dockerfile
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build-devtools:
+    uses: ./.github/workflows/docker-build-and-push.yaml
+    secrets:
+      aws_build_role_arn: ${{ secrets.AWS_BUILD_ROLE_ARN }}
+      aws_manifest_role_arn: ${{ secrets.AWS_MANIFEST_ROLE_ARN }}
+      aws_repository_role_arn: ${{ secrets.AWS_REPOSITORY_ROLE_ARN }}
+      private_repo_prefix: ${{ secrets.ECR_REPO_PREFIX }}
+    with:
+      dockerfile: .devcontainer/Dockerfile.devtools
+      project: devcontainer-devtools
+      public_repo_prefix: ${{ vars.ECRPUBLIC_REPO_PREFIX }}
+      temp_image_name: wdw-temp-repo-devcontainer-devtools-${{ github.run_id }}-${{ github.run_number }}
+    
+  build-ortools:
+    uses: ./.github/workflows/docker-build-and-push.yaml
+    secrets:
+      aws_build_role_arn: ${{ secrets.AWS_BUILD_ROLE_ARN }}
+      aws_manifest_role_arn: ${{ secrets.AWS_MANIFEST_ROLE_ARN }}
+      aws_repository_role_arn: ${{ secrets.AWS_REPOSITORY_ROLE_ARN }}
+      private_repo_prefix: ${{ secrets.ECR_REPO_PREFIX }}
+    with:
+      dockerfile: .devcontainer/Dockerfile.ortools
+      project: ortools
+      public_repo_prefix: ${{ vars.ECRPUBLIC_REPO_PREFIX }}
+      temp_image_name: wdw-temp-repo-ortools-${{ github.run_id }}-${{ github.run_number }}
+    
+  build-devcontainer:
+    needs: [build-devtools, build-ortools]
+    uses: ./.github/workflows/docker-build-and-push.yaml
+    secrets:
+      aws_build_role_arn: ${{ secrets.AWS_BUILD_ROLE_ARN }}
+      aws_manifest_role_arn: ${{ secrets.AWS_MANIFEST_ROLE_ARN }}
+      aws_repository_role_arn: ${{ secrets.AWS_REPOSITORY_ROLE_ARN }}
+      build_args: --build-arg FROM_REPOSITORY_DEVTOOLS=${{ (github.event_name == 'pull_request' && needs.build-devtools.result == 'success') && secrets.ECR_REPO_PREFIX || vars.ECRPUBLIC_REPO_PREFIX }} --build-arg FROM_REPOSITORY_ORTOOLS=${{ (github.event_name == 'pull_request' && needs.build-ortools.result == 'success') && secrets.ECR_REPO_PREFIX || vars.ECRPUBLIC_REPO_PREFIX }} --build-arg FROM_IMAGE_DEVTOOLS=${{ needs.build-devtools.outputs.image }} --build-arg FROM_IMAGE_ORTOOLS=${{ needs.build-ortools.outputs.image }}
+      private_repo_prefix: ${{ secrets.ECR_REPO_PREFIX }}
+    with:
+      dockerfile: .devcontainer/Dockerfile
+      filter: .devcontainer/Dockerfile.*
+      project: devcontainer
+      public_repo_prefix: ${{ vars.ECRPUBLIC_REPO_PREFIX }}
+      temp_image_name: wdw-temp-repo-devcontainer-${{ github.run_id }}-${{ github.run_number }}
+
+  delete-temporary-ecr-repo-devtools:
+    needs: [build-devtools, build-devcontainer]
+    if: success() || failure() || cancelled()
+    uses: ./.github/workflows/delete-ecr-repository.yaml
+    secrets:
+      aws_repository_role_arn: ${{ secrets.AWS_REPOSITORY_ROLE_ARN }}
+    with:
+      repository_name: ${{ needs.build-devtools.outputs.image }}
+
+  delete-temporary-ecr-repo-ortools:
+    needs: [build-ortools, build-devcontainer]
+    if: success() || failure() || cancelled()
+    uses: ./.github/workflows/delete-ecr-repository.yaml
+    secrets:
+      aws_repository_role_arn: ${{ secrets.AWS_REPOSITORY_ROLE_ARN }}
+    with:
+      repository_name: ${{ needs.build-ortools.outputs.image }}
+
+  delete-temporary-ecr-repo-devcontainer:
+    needs: [build-devcontainer]
+    if: success() || failure() || cancelled()
+    uses: ./.github/workflows/delete-ecr-repository.yaml
+    secrets:
+      aws_repository_role_arn: ${{ secrets.AWS_REPOSITORY_ROLE_ARN }}
+    with:
+      repository_name: ${{ needs.build-devcontainer.outputs.image }}

@@ -1,0 +1,36 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_REGION: "us-east-1"
+    BUILD_ARGS: ""
+    DOCKERFILE_PATH: ""
+    IMAGE_NAME: ""
+
+phases:
+  pre_build:
+    commands:
+      - set -e
+      - echo "Build env:"
+      - env
+      - echo Logging in to Docker Hub...
+      - echo "${DOCKERHUB_PASSWORD}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
+      - echo Logging in to Amazon ECR...
+      - aws --version
+      - |
+        if [ "${REPOSITORY#public.ecr.aws/*}" != "${REPOSITORY}" ]; then
+          aws ecr-public get-login-password --region "${AWS_REGION}" | docker login --username AWS --password-stdin public.ecr.aws
+        else
+          aws ecr get-login-password --region "${AWS_REGION}" | docker login --username AWS --password-stdin "${REPOSITORY}"
+        fi
+  build:
+    commands:
+      - set -e
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - docker build ${BUILD_ARGS} -t "${REPOSITORY}/${IMAGE_NAME}:${IMAGE_TAG}${TAG_SUFFIX}" -f "${DOCKERFILE_PATH}" .
+  post_build:
+    commands:
+      - set -e
+      - echo Build completed on "$(date)"
+      - docker push "${REPOSITORY}/${IMAGE_NAME}:${IMAGE_TAG}${TAG_SUFFIX}"

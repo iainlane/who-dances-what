@@ -1,0 +1,33 @@
+FROM debian:12.0-slim AS ortoolsbuilder
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    cmake \
+    curl \
+    git \
+    pkg-config \
+    # Deps for OR-Tools
+    libeigen3-dev \
+    libre2-dev \
+    zlib1g-dev
+
+# Build and install Google OR-Tools
+RUN curl -v -L https://github.com/google/or-tools/archive/refs/tags/v9.6.tar.gz | tar xz && \
+    cd or-tools-9.6 && \
+    cmake \
+    -S . \
+    -B build \
+    -DBUILD_absl=ON \
+    -DBUILD_Protobuf=ON \
+    -DBUILD_PDLP=ON \
+    -DBUILD_DEPS=OFF \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DBUILD_SAMPLES=OFF \
+    -DBUILD_EXAMPLES=OFF \
+    -DUSE_COINOR=OFF \
+    -DUSE_HIGHS=OFF \
+    -DUSE_PDLP=ON \
+    -DUSE_SCIP=OFF && \
+    # -DCMAKE_INSTALL_PREFIX=/home/devcontainer/or-tools && \
+    cmake --build build --target install --parallel $(nproc) && \
+    cd .. && \
+    rm -rf or-tools-9.6
