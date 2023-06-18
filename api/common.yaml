@@ -1,0 +1,28 @@
+components:
+  x-amazon-apigateway-integration:
+    lambda:
+      passthroughBehavior: "when_no_match"
+      payloadFormatVersion: "2.0"
+      httpMethod: "POST"
+      type: AWS_PROXY
+      requestParameters:
+        "overwrite:path": "$request.path"
+      parameters:
+        - name: proxy
+          in: path
+          required: true
+          schema:
+            type: string
+  securitySchemes:
+    jwt-authorizer:
+      type: openIdConnect
+      openIdConnectUrl: "${issuer}/.well-known/openid-configuration"
+      x-amazon-apigateway-authorizer:
+        authorizerPayloadFormatVersion: "2.0"
+        type: jwt
+        jwtConfiguration:
+          audience:
+            - "${audience}"
+        identitySource: "$request.header.Authorization"
+servers:
+  - url: "${api_gateway_url}"
