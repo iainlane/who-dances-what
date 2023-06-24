@@ -51,6 +51,8 @@ jobs:
     outputs:
       run: steps.paths-filter.outputs.dockerfile == 'true'
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Paths filter
         id: paths-filter
         uses: dorny/paths-filter@v2.11.1
