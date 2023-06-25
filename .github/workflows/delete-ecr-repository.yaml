@@ -31,4 +31,4 @@ jobs:
         run: |
           aws ecr delete-repository \
             --repository-name ${{ inputs.repository_name }} \
-            --force
+            --force || true

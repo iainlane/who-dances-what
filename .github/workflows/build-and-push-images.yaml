@@ -9,19 +9,9 @@ on:
   push:
     branches:
       - main
-    paths:
-      - '.github/workflows/*'
-      - .devcontainer/Dockerfile.devtools
-      - .devcontainer/Dockerfile.ortools
-      - .devcontainer/Dockerfile
   pull_request:
     branches:
       - main
-    paths:
-      - '.github/workflows/*'
-      - .devcontainer/Dockerfile.devtools
-      - .devcontainer/Dockerfile.ortools
-      - .devcontainer/Dockerfile
 
 permissions:
   contents: read
@@ -96,3 +86,18 @@ jobs:
       aws_repository_role_arn: ${{ secrets.AWS_REPOSITORY_ROLE_ARN }}
     with:
       repository_name: ${{ needs.build-devcontainer.outputs.image }}
+
+  # collect all the jobs, and if any of them failed, fail the overall status,
+  # otherwise pass. this is a workaround because branch protection rule and path
+  # filters don't really play too well together.
+  build-and-push-overall-status-ok:
+    runs-on: ubuntu-latest
+    needs: [build-devtools, build-ortools, build-devcontainer, delete-temporary-ecr-repo-devtools, delete-temporary-ecr-repo-ortools, delete-temporary-ecr-repo-devcontainer]
+    if: always()
+    steps:
+      - name: All tests ok
+        if: ${{ !(contains(needs.*.result, 'failure')) }}
+        run: exit 0
+      - name: Some tests failed
+        if: ${{ contains(needs.*.result, 'failure') }}
+        run: exit 1
