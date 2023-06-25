@@ -118,7 +118,6 @@ jobs:
           DOCKERFILE_PATH: ${{ inputs.dockerfile }}
           TAG_SUFFIX: -${{ matrix.architecture }}
         with:
-          compute-type-override: BUILD_GENERAL1_LARGE
           project-name: ${{ env.PROJECT }}
           env-vars-for-codebuild: "AWS_REGION, BUILD_ARGS, DOCKERFILE_PATH, IMAGE_NAME, REPOSITORY, TAG_SUFFIX"
 
