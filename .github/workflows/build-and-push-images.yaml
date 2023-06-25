@@ -10,7 +10,7 @@ on:
     branches:
       - main
     paths:
-      - .'github/workflows/*'
+      - '.github/workflows/*'
       - .devcontainer/Dockerfile.devtools
       - .devcontainer/Dockerfile.ortools
       - .devcontainer/Dockerfile
@@ -18,7 +18,7 @@ on:
     branches:
       - main
     paths:
-      - .'github/workflows/*'
+      - '.github/workflows/*'
       - .devcontainer/Dockerfile.devtools
       - .devcontainer/Dockerfile.ortools
       - .devcontainer/Dockerfile
