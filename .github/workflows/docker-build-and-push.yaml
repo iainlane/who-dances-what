@@ -26,7 +26,7 @@ on:
     outputs:
       image:
         description: 'ECR image we pushed'
-        value: ${{ github.event_name != 'pull_request' && inputs.project || jobs.create-temporary-ecr-repo.outputs.repository }}
+        value: ${{ (github.event_name != 'pull_request' || jobs.should-run.outputs.run != 'true') && inputs.project || jobs.create-temporary-ecr-repo.outputs.repository }}
     secrets:
       aws_build_role_arn:
         required: true
@@ -42,14 +42,13 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  IMAGE_NAME: ${{ github.event_name != 'pull_request' && inputs.project || inputs.temp_image_name }}
-  REPOSITORY: ${{ github.event_name != 'pull_request' && inputs.public_repo_prefix || secrets.private_repo_prefix }}
 
 jobs:
   should-run:
     runs-on: ubuntu-latest
     outputs:
       run: ${{ steps.paths-filter.outputs.dockerfile }}
+      image_name: ${{ (github.event_name != 'pull_request' || steps.paths-filter.outputs.dockerfile != 'true') && inputs.project || inputs.temp_image_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -125,6 +124,8 @@ jobs:
           BUILD_ARGS: ${{ secrets.build_args }}
           DOCKERFILE_PATH: ${{ inputs.dockerfile }}
           TAG_SUFFIX: -${{ matrix.architecture }}
+          IMAGE_NAME: ${{ needs.should-run.outputs.image_name }}
+          REPOSITORY: ${{ (github.event_name != 'pull_request' || needs.should-run.outputs.run != 'true') && inputs.public_repo_prefix || secrets.private_repo_prefix }}
         with:
           project-name: ${{ env.PROJECT }}
           env-vars-for-codebuild: "AWS_REGION, BUILD_ARGS, DOCKERFILE_PATH, IMAGE_NAME, REPOSITORY, TAG_SUFFIX"
@@ -155,11 +156,14 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
         if: ${{ needs.should-run.outputs.run == 'true' && needs.build-and-push.result == 'success' }}
         with:
-          registry-type: ${{ github.event_name != 'pull_request' && 'public' || 'private' }}
+          registry-type: ${{ (github.event_name != 'pull_request' || needs.should-run.outputs.run != 'true') && 'public' || 'private' }}
 
       - name: Create and push manifest
         uses: Noelware/docker-manifest-action@0.3.1
         if: ${{ needs.should-run.outputs.run == 'true' && needs.build-and-push.result == 'success' }}
+        env:
+          REPOSITORY: ${{ (github.event_name != 'pull_request' || needs.should-run.outputs.run != 'true') && inputs.public_repo_prefix || secrets.private_repo_prefix }}
+          IMAGE_NAME: ${{ needs.should-run.outputs.image_name }}
         with:
           inputs: ${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:latest
           images: ${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:latest-x86_64,${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:latest-aarch64
