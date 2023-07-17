@@ -134,8 +134,9 @@ jobs:
         if: failure() || cancelled()
         continue-on-error: true
         run: |
-          aws codebuild batch-delete-builds \
-            --ids $(aws codebuild list-builds-for-project --project-name "${{ env.PROJECT }}" --query 'ids' --output text)
+          for id in $(aws codebuild list-builds-for-project --project-name "${{ env.PROJECT }}" --query 'ids' --output text); do
+            aws codebuild stop-build --id "$id"
+          done
 
   manifest:
     needs: [should-run, build-and-push]
