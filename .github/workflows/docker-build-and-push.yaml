@@ -27,6 +27,9 @@ on:
       image:
         description: 'ECR image we pushed'
         value: ${{ (github.event_name != 'pull_request' || jobs.should-run.outputs.run != 'true') && inputs.project || jobs.create-temporary-ecr-repo.outputs.repository }}
+      built:
+        description: 'Whether or not we built the image'
+        value: ${{ jobs.should-run.outputs.run == 'true' }}
     secrets:
       aws_build_role_arn:
         required: true
