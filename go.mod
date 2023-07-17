@@ -7,7 +7,7 @@ require (
 	github.com/getkin/kin-openapi v0.107.0
 	github.com/labstack/echo/v4 v4.9.1
 	github.com/stretchr/testify v1.8.2
-	github.com/urfave/cli/v2 v2.25.3
+	github.com/urfave/cli/v2 v2.25.7
 	gorm.io/driver/sqlite v1.5.0
 	gorm.io/gorm v1.25.1
 )
