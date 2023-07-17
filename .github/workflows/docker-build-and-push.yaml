@@ -125,10 +125,10 @@ jobs:
           DOCKERFILE_PATH: ${{ inputs.dockerfile }}
           TAG_SUFFIX: -${{ matrix.architecture }}
           IMAGE_NAME: ${{ needs.should-run.outputs.image_name }}
-          REPOSITORY: ${{ (github.event_name != 'pull_request' || needs.should-run.outputs.run != 'true') && inputs.public_repo_prefix || secrets.private_repo_prefix }}
+          PUSH_REPOSITORY: ${{ (github.event_name != 'pull_request' || needs.should-run.outputs.run != 'true') && inputs.public_repo_prefix || secrets.private_repo_prefix }}
         with:
           project-name: ${{ env.PROJECT }}
-          env-vars-for-codebuild: "AWS_REGION, BUILD_ARGS, DOCKERFILE_PATH, IMAGE_NAME, REPOSITORY, TAG_SUFFIX"
+          env-vars-for-codebuild: "AWS_REGION, BUILD_ARGS, DOCKERFILE_PATH, IMAGE_NAME, PUSH_REPOSITORY, TAG_SUFFIX"
 
       - name: Stop Builds
         if: failure() || cancelled()
