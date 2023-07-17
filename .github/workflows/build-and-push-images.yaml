@@ -22,7 +22,7 @@ jobs:
     uses: ./.github/workflows/docker-build-and-push.yaml
     secrets:
       aws_build_role_arn: ${{ secrets.AWS_BUILD_ROLE_ARN }}
-      aws_manifest_role_arn: ${{ github.event_name == 'pull_request' && secrets.AWS_MANIFEST_ROLE_ARN || secrets.AWS_MANIFEST_ECRPUBLIC_ROLE_ARN }}
+      aws_manifest_role_arn: ${{ secrets.AWS_MANIFEST_ROLE_ARN }}
       aws_repository_role_arn: ${{ secrets.AWS_REPOSITORY_ROLE_ARN }}
       private_repo_prefix: ${{ secrets.ECR_REPO_PREFIX }}
     with:
@@ -35,7 +35,7 @@ jobs:
     uses: ./.github/workflows/docker-build-and-push.yaml
     secrets:
       aws_build_role_arn: ${{ secrets.AWS_BUILD_ROLE_ARN }}
-      aws_manifest_role_arn: ${{ github.event_name == 'pull_request' && secrets.AWS_MANIFEST_ROLE_ARN || secrets.AWS_MANIFEST_ECRPUBLIC_ROLE_ARN }}
+      aws_manifest_role_arn: ${{ secrets.AWS_MANIFEST_ROLE_ARN }}
       aws_repository_role_arn: ${{ secrets.AWS_REPOSITORY_ROLE_ARN }}
       private_repo_prefix: ${{ secrets.ECR_REPO_PREFIX }}
     with:
@@ -49,7 +49,7 @@ jobs:
     uses: ./.github/workflows/docker-build-and-push.yaml
     secrets:
       aws_build_role_arn: ${{ secrets.AWS_BUILD_ROLE_ARN }}
-      aws_manifest_role_arn: ${{ github.event_name == 'pull_request' && secrets.AWS_MANIFEST_ROLE_ARN || secrets.AWS_MANIFEST_ECRPUBLIC_ROLE_ARN }}
+      aws_manifest_role_arn: ${{ secrets.AWS_MANIFEST_ROLE_ARN }}
       aws_repository_role_arn: ${{ secrets.AWS_REPOSITORY_ROLE_ARN }}
       build_args: --build-arg FROM_REPOSITORY_DEVTOOLS=${{ (github.event_name == 'pull_request' && needs.build-devtools.result == 'success') && secrets.ECR_REPO_PREFIX || vars.ECRPUBLIC_REPO_PREFIX }} --build-arg FROM_REPOSITORY_ORTOOLS=${{ (github.event_name == 'pull_request' && needs.build-ortools.result == 'success') && secrets.ECR_REPO_PREFIX || vars.ECRPUBLIC_REPO_PREFIX }} --build-arg FROM_IMAGE_DEVTOOLS=${{ needs.build-devtools.outputs.image }} --build-arg FROM_IMAGE_ORTOOLS=${{ needs.build-ortools.outputs.image }}
       private_repo_prefix: ${{ secrets.ECR_REPO_PREFIX }}
