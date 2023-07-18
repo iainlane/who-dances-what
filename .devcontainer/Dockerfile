@@ -10,7 +10,7 @@ FROM ${FROM_REPOSITORY_DEVTOOLS}/${FROM_IMAGE_DEVTOOLS}:${TAG} as devtools
 
 FROM ${FROM_REPOSITORY_ORTOOLS}/${FROM_IMAGE_ORTOOLS}:${TAG} as ortools
 
-FROM golang:1.20.5-bookworm
+FROM golang:1.20.6-bookworm
 
 COPY --from=devtools \
     /usr/local/bin/ \
