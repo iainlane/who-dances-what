@@ -10,6 +10,8 @@ FROM ${FROM_REPOSITORY_DEVTOOLS}/${FROM_IMAGE_DEVTOOLS}:${TAG} as devtools
 
 FROM ${FROM_REPOSITORY_ORTOOLS}/${FROM_IMAGE_ORTOOLS}:${TAG} as ortools
 
+FROM node:20.5.0 as node
+
 FROM golang:1.20.6-bookworm
 
 COPY --from=devtools \
@@ -48,6 +50,26 @@ RUN apt-get update && apt-get install -y \
     libeigen3-dev \
     libre2-dev \
     zlib1g-dev
+
+COPY --from=node \
+    /usr/local/bin/ \
+    /usr/local/bin/
+
+COPY --from=node \
+    /usr/local/lib/ \
+    /usr/local/lib/
+
+COPY --from=node \
+    /usr/local/include/ \
+    /usr/local/include/
+
+COPY --from=node \
+    /usr/local/share/doc \
+    /usr/local/share/doc
+
+COPY --from=node \
+    /usr/local/share/man \
+    /usr/local/share/man
 
 RUN useradd -m devcontainer -s /bin/zsh
 RUN echo "devcontainer ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/devcontainer
