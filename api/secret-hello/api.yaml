@@ -2,6 +2,18 @@ openapi: 3.0.1
 info:
   title: who-dances-what-api
   version: "1.0.0"
+components:
+  securitySchemes:
+    jwt-authorizer:
+      type: openIdConnect
+      openIdConnectUrl: "${issuer}/.well-known/openid-configuration"
+      x-amazon-apigateway-authorizer:
+        authorizerPayloadFormatVersion: "2.0"
+        type: jwt
+        jwtConfiguration:
+          audience:
+            - "${audience}"
+        identitySource: "$request.header.Authorization"
 paths:
   /secret-hello:
     get:
@@ -10,7 +22,8 @@ paths:
         "#ref": "#/components/x-amazon-apigateway-integrations/lambda"
         uri: ${public_lambda_arn}
       security:
-        - jwt-authorizer: []
+        - jwt-authorizer:
+          - email
       description: A simple endpoint that returns a greeting string but it's secret
       responses:
         "200":
