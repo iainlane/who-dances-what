@@ -55,7 +55,7 @@ jobs:
       private_repo_prefix: ${{ secrets.ECR_REPO_PREFIX }}
     with:
       dockerfile: .devcontainer/Dockerfile
-      filter: .devcontainer/Dockerfile.*
+      filter: .devcontainer/Dockerfile*
       project: who-dances-what-devcontainer
       public_repo_prefix: ${{ vars.ECRPUBLIC_REPO_PREFIX }}
       temp_image_name: wdw-temp-repo-devcontainer-${{ github.run_id }}-${{ github.run_number }}
