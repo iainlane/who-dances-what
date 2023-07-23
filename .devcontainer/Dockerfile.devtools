@@ -12,6 +12,8 @@ FROM golang:1.20.6-bookworm as gobuilder
 RUN go install github.com/rs/curlie@latest
 RUN go install github.com/muesli/duf@latest
 RUN go install golang.org/x/tools/gopls@latest
+RUN go install github.com/go-delve/delve/cmd/dlv@latest
+RUN go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
 FROM scratch
 
