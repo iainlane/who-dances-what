@@ -3,7 +3,7 @@ module github.com/iainlane/who-dances-what
 go 1.20
 
 require (
-	github.com/deepmap/oapi-codegen v1.13.0
+	github.com/deepmap/oapi-codegen v1.13.2
 	github.com/getkin/kin-openapi v0.118.0
 	github.com/hashicorp/go-retryablehttp v0.7.4
 	github.com/kelseyhightower/envconfig v1.4.0
@@ -43,11 +43,9 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	golang.org/x/crypto v0.11.0 // indirect
-	golang.org/x/mod v0.10.0 // indirect
 	golang.org/x/net v0.12.0 // indirect
 	golang.org/x/text v0.11.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
-	golang.org/x/tools v0.9.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
