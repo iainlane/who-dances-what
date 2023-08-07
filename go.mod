@@ -3,7 +3,7 @@ module github.com/iainlane/who-dances-what
 go 1.20
 
 require (
-	github.com/deepmap/oapi-codegen v1.13.3
+	github.com/deepmap/oapi-codegen v1.13.4
 	github.com/getkin/kin-openapi v0.118.0
 	github.com/hashicorp/go-retryablehttp v0.7.4
 	github.com/kelseyhightower/envconfig v1.4.0
