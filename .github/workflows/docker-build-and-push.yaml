@@ -84,7 +84,7 @@ jobs:
           SESSION_NAME=GHA-${{ inputs.project }}-temp-repo-${{ github.run_id }}-${{ github.run_number }}
           echo "SESSION_NAME=${SESSION_NAME/who-dances-what/wdw}" >> "${GITHUB_ENV}"
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v3
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ secrets.aws_repository_role_arn }}
@@ -111,7 +111,7 @@ jobs:
       PROJECT: ${{ inputs.project }}-build-and-push-images-${{ matrix.architecture }}
     steps:
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v3
         if: ${{ needs.should-run.outputs.run == 'true' }}
         with:
           aws-region: ${{ env.AWS_REGION }}
@@ -148,7 +148,7 @@ jobs:
     name: Manifest
     steps:
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v3
         if: ${{ needs.should-run.outputs.run == 'true' && needs.build-and-push.result == 'success' }}
         with:
           aws-region: ${{ env.AWS_REGION }}
