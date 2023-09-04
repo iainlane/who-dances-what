@@ -15,7 +15,7 @@ jobs:
             image: public.ecr.aws/r9i9c8e1/who-dances-what-devcontainer:latest
             options: --user root
         steps:
-        - uses: actions/checkout@v3.5.3
+        - uses: actions/checkout@v4
         - name: Configure cmake
           run: cmake -S cppsolver -B cppsolver/build
         - name: Build
@@ -26,7 +26,7 @@ jobs:
         name: lint
         runs-on: ubuntu-latest
         steps:
-        - uses: actions/checkout@v3.5.3
+        - uses: actions/checkout@v4
         - uses: actions/setup-go@v4.1.0
           with:
             go-version: '1.21'

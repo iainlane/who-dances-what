@@ -54,7 +54,7 @@ jobs:
       image_name: ${{ (github.event_name != 'pull_request' || steps.paths-filter.outputs.dockerfile != 'true') && inputs.project || inputs.temp_image_name }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Paths filter
         id: paths-filter
         uses: dorny/paths-filter@v2.11.1
