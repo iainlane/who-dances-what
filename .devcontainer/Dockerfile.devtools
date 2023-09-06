@@ -30,4 +30,6 @@ COPY --from=gobuilder \
     /go/bin/curlie \
     /go/bin/duf \
     /go/bin/gopls \
+    /go/bin/dlv \
+    /go/bin/golangci-lint \
     /usr/local/bin/
