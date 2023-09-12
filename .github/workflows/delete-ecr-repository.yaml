@@ -18,7 +18,7 @@ jobs:
       contents: read
     steps:
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v3
+        uses: aws-actions/configure-aws-credentials@v4
         # XXX: at some point we could keep the temp repos around for a while so
         # that the images can be pulled
         with:
