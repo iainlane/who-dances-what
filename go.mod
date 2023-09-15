@@ -54,7 +54,7 @@ require (
 
 require (
 	github.com/aws/aws-lambda-go v1.41.0
-	github.com/awslabs/aws-lambda-go-api-proxy v0.14.0
+	github.com/awslabs/aws-lambda-go-api-proxy v0.15.0
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/fatih/color v1.15.0
 	github.com/jinzhu/inflection v1.0.0 // indirect
