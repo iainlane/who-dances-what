@@ -14,7 +14,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/urfave/cli/v2 v2.25.7
 	gorm.io/driver/sqlite v1.5.4
-	gorm.io/gorm v1.25.4
+	gorm.io/gorm v1.25.5
 )
 
 require (
