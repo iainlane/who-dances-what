@@ -10,7 +10,7 @@ require (
 	github.com/hashicorp/go-retryablehttp v0.7.4
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/labstack/echo/v4 v4.11.2
-	github.com/lestrrat-go/jwx/v2 v2.0.15
+	github.com/lestrrat-go/jwx/v2 v2.0.16
 	github.com/stretchr/testify v1.8.4
 	github.com/urfave/cli/v2 v2.25.7
 	gorm.io/driver/sqlite v1.5.4
