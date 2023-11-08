@@ -8,7 +8,7 @@ RUN cargo install \
     ripgrep \
     tokei
 
-FROM golang:1.21.3-bookworm as gobuilder
+FROM golang:1.21.4-bookworm as gobuilder
 RUN go install github.com/rs/curlie@latest
 RUN go install github.com/muesli/duf@latest
 RUN go install golang.org/x/tools/gopls@latest
