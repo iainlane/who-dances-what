@@ -163,7 +163,7 @@ jobs:
           registry-type: ${{ (github.event_name != 'pull_request' || needs.should-run.outputs.run != 'true') && 'public' || 'private' }}
 
       - name: Create and push manifest
-        uses: Noelware/docker-manifest-action@0.4.0
+        uses: Noelware/docker-manifest-action@0.4.1
         if: ${{ needs.should-run.outputs.run == 'true' && needs.build-and-push.result == 'success' }}
         env:
           REPOSITORY: ${{ (github.event_name != 'pull_request' || needs.should-run.outputs.run != 'true') && inputs.public_repo_prefix || secrets.private_repo_prefix }}
