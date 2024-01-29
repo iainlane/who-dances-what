@@ -44,8 +44,8 @@ require (
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
-	golang.org/x/crypto v0.17.0 // indirect
-	golang.org/x/net v0.19.0 // indirect
+	golang.org/x/crypto v0.18.0 // indirect
+	golang.org/x/net v0.20.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
@@ -53,7 +53,7 @@ require (
 
 require (
 	github.com/aws/aws-lambda-go v1.45.0
-	github.com/awslabs/aws-lambda-go-api-proxy v0.16.0
+	github.com/awslabs/aws-lambda-go-api-proxy v0.16.1
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/fatih/color v1.16.0
 	github.com/jinzhu/inflection v1.0.0 // indirect
@@ -62,6 +62,6 @@ require (
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spirosoik/echo-logrus v1.0.0
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
-	golang.org/x/exp v0.0.0-20220318154914-8dddf5d87bd8
-	golang.org/x/sys v0.15.0 // indirect
+	golang.org/x/exp v0.0.0-20240112132812-db7319d0e0e3
+	golang.org/x/sys v0.16.0 // indirect
 )
