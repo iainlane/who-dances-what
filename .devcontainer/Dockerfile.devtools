@@ -1,4 +1,4 @@
-FROM rust:1.77.0-bullseye as rustbuilder
+FROM rust:1.77.1-bullseye as rustbuilder
 RUN cargo install \
     bat \
     du-dust \
