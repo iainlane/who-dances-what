@@ -10,7 +10,7 @@ FROM ${FROM_REPOSITORY_DEVTOOLS}/${FROM_IMAGE_DEVTOOLS}:${TAG} as devtools
 
 FROM ${FROM_REPOSITORY_ORTOOLS}/${FROM_IMAGE_ORTOOLS}:${TAG} as ortools
 
-FROM node:21.7.1 as node
+FROM node:21.7.2 as node
 
 FROM golang:1.22.2-bookworm
 
