@@ -7,7 +7,7 @@ toolchain go1.21.0
 require (
 	github.com/deepmap/oapi-codegen v1.16.2
 	github.com/getkin/kin-openapi v0.124.0
-	github.com/hashicorp/go-retryablehttp v0.7.5
+	github.com/hashicorp/go-retryablehttp v0.7.6
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/labstack/echo/v4 v4.12.0
 	github.com/lestrrat-go/jwx/v2 v2.0.21
@@ -63,5 +63,5 @@ require (
 	github.com/spirosoik/echo-logrus v1.0.0
 	github.com/xrash/smetrics v0.0.0-20240312152122-5f08fbb34913 // indirect
 	golang.org/x/exp v0.0.0-20240112132812-db7319d0e0e3
-	golang.org/x/sys v0.19.0 // indirect
+	golang.org/x/sys v0.20.0 // indirect
 )
