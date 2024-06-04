@@ -5,7 +5,7 @@ go 1.21
 toolchain go1.21.0
 
 require (
-	github.com/deepmap/oapi-codegen v1.16.2
+	github.com/deepmap/oapi-codegen v1.16.3
 	github.com/getkin/kin-openapi v0.124.0
 	github.com/hashicorp/go-retryablehttp v0.7.7
 	github.com/kelseyhightower/envconfig v1.4.0
