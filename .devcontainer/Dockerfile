@@ -12,7 +12,7 @@ FROM ${FROM_REPOSITORY_ORTOOLS}/${FROM_IMAGE_ORTOOLS}:${TAG} as ortools
 
 FROM node:22.3.0 as node
 
-FROM golang:1.22.4-bookworm
+FROM golang:1.23rc1-bookworm
 
 COPY --from=devtools \
     /usr/local/bin/ \
